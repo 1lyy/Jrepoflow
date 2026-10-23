@@ -2,7 +2,7 @@
 
 ## Positioning
 
-Local-first Java repository agent focused on Plan + DAG, Memory, code RAG and MCP tool integration.
+Local-first Java repository agent focused on Multi-Agent, Plan + DAG, Memory, code RAG and MCP tool integration.
 
 ## Commands
 
@@ -15,6 +15,7 @@ Local-first Java repository agent focused on Plan + DAG, Memory, code RAG and MC
 
 - `Agent` runs the default ReAct loop.
 - `PlanExecuteAgent` turns a planner response into an `ExecutionPlan` and executes ready DAG batches.
+- `AgentOrchestrator` coordinates Planner, Worker and Reviewer roles over ready dependency batches.
 - `MemoryManager` owns conversation compaction and explicit long-term memory.
 - `CodeIndex` and `CodeRetriever` implement AST-based indexing and hybrid retrieval.
 - `McpServerManager` discovers MCP tools and registers them in `ToolRegistry`.

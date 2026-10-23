@@ -2,7 +2,7 @@
 
 JRepoFlow（Java Repository Workflow）是一个面向本地 Java 代码仓库的智能开发 CLI。它把模型推理、代码检索、工具执行、任务规划和上下文管理组织成一条完整流程，帮助开发者理解、修改和验证项目代码。
 
-项目聚焦于四个核心方向：Plan + DAG、分层 Memory、代码 RAG 和 MCP 工具接入。
+项目聚焦于五个核心方向：Multi-Agent、Plan + DAG、分层 Memory、代码 RAG 和 MCP 工具接入。
 
 ## 技术栈
 
@@ -13,6 +13,10 @@ JRepoFlow（Java Repository Workflow）是一个面向本地 Java 代码仓库�
 - MCP、JSON-RPC 2.0
 
 ## 核心设计
+
+### Multi-Agent 协作
+
+`/team` 模式由 Orchestrator 集中协调 Planner、Worker 和 Reviewer。Planner 把目标拆成带依赖的步骤，多个 Worker 并行领取当前就绪的任务，Reviewer 检查每个结果并给出修改意见；未通过的任务最多重试两次。Agent 之间通过结构化 `AgentMessage` 传递任务、结果和反馈，共享工具注册表与项目记忆，但保留各自独立的对话历史。
 
 ### Plan + DAG
 
@@ -53,7 +57,9 @@ MCP 客户端基于 JSON-RPC 2.0 实现，支持：
    │
    ├─ 普通任务 ──> ReAct Agent ──> ToolRegistry ──> 文件 / 命令 / RAG / MCP
    │
-   └─ /plan ─────> Planner ──> DAG 就绪批次 ──> 并行执行 ──> 结果汇总
+   ├─ /plan ─────> Planner ──> DAG 就绪批次 ──> 并行执行 ──> 结果汇总
+   │
+   └─ /team ─────> Planner ──> Worker 就绪批次 ──> Reviewer ──> 结果汇总
                                       │
                          Memory <─────┴─────> Context Compaction
 ```
@@ -93,6 +99,7 @@ mvn test -DskipTests=false
 | 命令 | 作用 |
 |---|---|
 | `/plan <任务>` | 生成 DAG，并按依赖批次执行 |
+| `/team <任务>` | 启动 Planner / Worker / Reviewer 多 Agent 协作 |
 | `/index [目录]` | 建立 AST + Embedding 代码索引 |
 | `/search <查询>` | 执行混合代码检索 |
 | `/graph <名称>` | 查询类或方法关系 |
@@ -139,7 +146,7 @@ stdio 与 Streamable HTTP 示例：
 
 ```text
 src/main/java/io/jrepoflow/
-├── agent/      ReAct 与 Plan-and-Execute 主流程
+├── agent/      ReAct、Plan-and-Execute 与 Multi-Agent 主流程
 ├── plan/       Planner、Task、ExecutionPlan DAG
 ├── memory/     会话压缩、Session Memory、长期记忆
 ├── rag/        AST 分块、Embedding、混合检索、SQLite 向量存储

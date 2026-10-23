@@ -13,6 +13,7 @@ class CliCommandParserTest {
     @Test
     void parsesCoreCommandsAndPayloads() {
         assertCommand("/plan 重构订单服务", CliCommandParser.CommandType.PLAN, "重构订单服务");
+        assertCommand("/team 重构订单服务", CliCommandParser.CommandType.TEAM, "重构订单服务");
         assertCommand("/index src", CliCommandParser.CommandType.INDEX, "src");
         assertCommand("/search 用户登录", CliCommandParser.CommandType.SEARCH, "用户登录");
         assertCommand("/graph UserService", CliCommandParser.CommandType.GRAPH, "UserService");

@@ -1,6 +1,7 @@
 package io.jrepoflow.cli;
 
 import io.jrepoflow.agent.Agent;
+import io.jrepoflow.agent.AgentOrchestrator;
 import io.jrepoflow.agent.PlanExecuteAgent;
 import io.jrepoflow.config.JRepoFlowConfig;
 import io.jrepoflow.llm.LlmClient;
@@ -65,6 +66,8 @@ public final class Main {
     private static void runShell(LlmClient llmClient, ToolRegistry tools,
                                  McpServerManager mcpManager, Path projectRoot) throws IOException {
         Agent agent = new Agent(llmClient, tools);
+        AgentOrchestrator teamAgent = new AgentOrchestrator(
+                llmClient, tools, agent.getMemoryManager());
         System.out.printf("JRepoFlow v%s | %s/%s | %s%n",
                 VERSION, llmClient.getProviderName(), llmClient.getModelName(), projectRoot);
         printHelp();
@@ -88,11 +91,12 @@ public final class Main {
             if (command.type() == CliCommandParser.CommandType.EXIT) {
                 break;
             }
-            handleCommand(command, agent, llmClient, tools, mcpManager, projectRoot);
+            handleCommand(command, agent, teamAgent, llmClient, tools, mcpManager, projectRoot);
         }
     }
 
     private static void handleCommand(CliCommandParser.ParsedCommand command, Agent agent,
+                                      AgentOrchestrator teamAgent,
                                       LlmClient llmClient, ToolRegistry tools,
                                       McpServerManager mcpManager, Path projectRoot) {
         String payload = command.payload();
@@ -101,6 +105,7 @@ public final class Main {
                 case HELP -> printHelp();
                 case CLEAR -> {
                     agent.clearHistory();
+                    teamAgent.clearHistory();
                     System.out.println("会话上下文已清空，长期记忆保留。");
                 }
                 case COMPACT -> printCompaction(agent.compactHistoryNow());
@@ -125,6 +130,10 @@ public final class Main {
                             llmClient, tools, agent.getMemoryManager(),
                             (goal, plan) -> PlanExecuteAgent.PlanReviewDecision.execute(), System.out);
                     printAgentResult(planAgent.run(payload));
+                }
+                case TEAM -> {
+                    requirePayload(payload, "/team <任务>");
+                    printAgentResult(teamAgent.run(payload));
                 }
                 case INDEX -> {
                     Path target = payload == null || payload.isBlank()
@@ -213,6 +222,7 @@ public final class Main {
         System.out.println("""
                 核心命令:
                   /plan <任务>       生成 DAG 并按依赖批次执行
+                  /team <任务>       Planner/Worker/Reviewer 多 Agent 协作
                   /index [目录]      建立 AST + Embedding 代码索引
                   /search <查询>     混合检索代码
                   /graph <名称>      查看类或方法关系

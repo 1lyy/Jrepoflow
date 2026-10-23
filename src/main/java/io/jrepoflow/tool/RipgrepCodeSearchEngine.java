@@ -171,7 +171,7 @@ final class RipgrepCodeSearchEngine implements CodeSearchEngine {
         if (root.equals(projectRoot)) {
             return ".";
         }
-        return projectRoot.relativize(root).toString();
+        return projectRoot.relativize(root).toString().replace('\\', '/');
     }
 
     private ContextLine toContextLine(JsonNode data) {
@@ -179,7 +179,7 @@ final class RipgrepCodeSearchEngine implements CodeSearchEngine {
     }
 
     private String pathText(JsonNode data) {
-        return data.path("path").path("text").asText();
+        return data.path("path").path("text").asText().replace('\\', '/');
     }
 
     private boolean isRipgrepAvailable() {

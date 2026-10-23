@@ -3,7 +3,7 @@ package io.jrepoflow.cli;
 /** 将终端输入解析成有限命令集；未识别的斜杠命令不会回退给模型。 */
 final class CliCommandParser {
     enum CommandType {
-        NONE, UNKNOWN_COMMAND, HELP, EXIT, CLEAR, COMPACT, PLAN,
+        NONE, UNKNOWN_COMMAND, HELP, EXIT, CLEAR, COMPACT, PLAN, TEAM,
         MEMORY_STATUS, MEMORY_CLEAR, MEMORY_LIST, MEMORY_DELETE, MEMORY_SEARCH, MEMORY_SAVE,
         INDEX, SEARCH, GRAPH, CONTEXT_STATUS, POLICY_STATUS, AUDIT_TAIL,
         MCP_LIST, MCP_RESTART, MCP_LOGS, MCP_DISABLE, MCP_ENABLE
@@ -36,6 +36,7 @@ final class CliCommandParser {
             case "/clear" -> new ParsedCommand(CommandType.CLEAR, null);
             case "/compact" -> new ParsedCommand(CommandType.COMPACT, null);
             case "/plan" -> new ParsedCommand(CommandType.PLAN, payload);
+            case "/team" -> new ParsedCommand(CommandType.TEAM, payload);
             case "/context", "/ctx" -> new ParsedCommand(CommandType.CONTEXT_STATUS, null);
             case "/save" -> new ParsedCommand(CommandType.MEMORY_SAVE, payload);
             case "/index" -> new ParsedCommand(CommandType.INDEX, payload);

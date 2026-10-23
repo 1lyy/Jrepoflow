@@ -6,6 +6,7 @@ The public repository is intentionally focused. Items below are future improveme
 
 - ReAct agent with local repository tools
 - Plan + DAG ready-batch parallel execution
+- Planner/Worker/Reviewer multi-agent orchestration
 - Dual-path context compaction and explicit long-term memory
 - JavaParser AST chunking with Embedding + keyword retrieval
 - MCP JSON-RPC client over stdio and Streamable HTTP
@@ -21,4 +22,4 @@ The public repository is intentionally focused. Items below are future improveme
 
 ## Non-goals
 
-Browser automation, chat channels, graphical TUI, multi-agent orchestration and hosted runtime APIs are deliberately outside the current repository scope.
+Browser automation, chat channels, graphical TUI and hosted runtime APIs are deliberately outside the current repository scope.
